@@ -141,7 +141,7 @@
 			"importpath": "github.com/go-kit/kit/endpoint",
 			"repository": "https://github.com/go-kit/kit",
 			"vcs": "git",
-			"revision": "905b60253dbac4a14625ce52217ede00d3a3aca7",
+			"revision": "4a2920475703ebd23281dfacdd609d347a9d3285",
 			"branch": "master",
 			"path": "/endpoint",
 			"notests": true
@@ -150,7 +150,7 @@
 			"importpath": "github.com/go-kit/kit/log",
 			"repository": "https://github.com/go-kit/kit",
 			"vcs": "git",
-			"revision": "905b60253dbac4a14625ce52217ede00d3a3aca7",
+			"revision": "ee4af7b1e6476e0d2970227db2026d11a037e72e",
 			"branch": "master",
 			"path": "log",
 			"notests": true
@@ -177,7 +177,7 @@
 			"importpath": "github.com/go-kit/kit/transport/http",
 			"repository": "https://github.com/go-kit/kit",
 			"vcs": "git",
-			"revision": "905b60253dbac4a14625ce52217ede00d3a3aca7",
+			"revision": "d09a670dfc01a4d74f857d932bde6eb3fbe18642",
 			"branch": "master",
 			"path": "/transport/http",
 			"notests": true
@@ -605,7 +605,7 @@
 			"importpath": "golang.org/x/net/context",
 			"repository": "https://go.googlesource.com/net",
 			"vcs": "git",
-			"revision": "8fd7f25955530b92e73e9e1932a41b522b22ccd9",
+			"revision": "b3756b4b77d7b13260a0a2ec658753cf48922eac",
 			"branch": "master",
 			"path": "/context",
 			"notests": true

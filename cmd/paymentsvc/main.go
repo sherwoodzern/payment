@@ -1,20 +1,22 @@
 package main
 
+
 import (
 	"flag"
 	"fmt"
-	"net"
+	//"net"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
+	//"strings"
 	"syscall"
 
-	"github.com/go-kit/kit/log"
+	//"github.com/go-kit/kit/log"
 	"github.com/microservices-demo/payment"
-	stdopentracing "github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
+	//stdopentracing "github.com/opentracing/opentracing-go"
+	//zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"golang.org/x/net/context"
+
 )
 
 const (
@@ -24,18 +26,21 @@ const (
 func main() {
 	var (
 		port          = flag.String("port", "8080", "Port to bind HTTP listener")
-		zip           = flag.String("zipkin", os.Getenv("ZIPKIN"), "Zipkin address")
+		//zip           = flag.String("zipkin", os.Getenv("ZIPKIN"), "Zipkin address")
 		declineAmount = flag.Float64("decline", 105, "Decline payments over certain amount")
 	)
 	flag.Parse()
-	var tracer stdopentracing.Tracer
+
+	fmt.Println("The Port Value: " + *port)
+	// The istio service mesh provides openTracing at the time the service is deployed
+	/* var tracer stdopentracing.Tracer
 	{
 		// Log domain.
 		var logger log.Logger
 		{
 			logger = log.NewLogfmtLogger(os.Stderr)
-			logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
-			logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+			logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+			logger = log.With(logger, "caller", log.DefaultCaller)
 		}
 		// Find service local IP.
 		conn, err := net.Dial("udp", "8.8.8.8:80")
@@ -49,7 +54,8 @@ func main() {
 		if *zip == "" {
 			tracer = stdopentracing.NoopTracer{}
 		} else {
-			logger := log.NewContext(logger).With("tracer", "Zipkin")
+			logger := log.With(	logger,"tracer", "Zipkin")
+
 			logger.Log("addr", zip)
 			collector, err := zipkin.NewHTTPCollector(
 				*zip,
@@ -69,16 +75,22 @@ func main() {
 		}
 		stdopentracing.InitGlobalTracer(tracer)
 
-	}
+	} */
 	// Mechanical stuff.
 	errc := make(chan error)
-	ctx := context.Background()
+	ctx := context.Background()  //return a non-nil, empty Context
 
-	handler, logger := payment.WireUp(ctx, float32(*declineAmount), tracer, ServiceName)
+	// ? Do we need the tracer ?
+	//handler, logger := payment.WireUp(ctx, float32(*declineAmount), tracer, ServiceName)
+
+	//The tracer was removed
+	handler, logger := payment.WireUp(ctx,float32(*declineAmount),ServiceName)
 
 	// Create and launch the HTTP server.
 	go func() {
-		logger.Log("transport", "HTTP", "port", *port)
+		logger.Log("transport", "HTTP", "port", "8080")
+		logger.Log("transport", "HTTP", "port-pointer", *port)
+		//errc <- http.ListenAndServe(":"+*port, handler)
 		errc <- http.ListenAndServe(":"+*port, handler)
 	}()
 

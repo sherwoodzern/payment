@@ -3,13 +3,15 @@ package payment
 import (
 	"net/http"
 	"os"
+	goLogger "log"
 
 	"github.com/go-kit/kit/log"
 	"golang.org/x/net/context"
 
-	stdopentracing "github.com/opentracing/opentracing-go"
+	//stdopentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/weaveworks/common/middleware"
+	//"github.com/weaveworks/common/middleware"
+
 )
 
 var (
@@ -20,17 +22,24 @@ var (
 	}, []string{"method", "route", "status_code", "isWS"})
 )
 
+
 func init() {
 	prometheus.MustRegister(HTTPLatency)
 }
 
-func WireUp(ctx context.Context, declineAmount float32, tracer stdopentracing.Tracer, serviceName string) (http.Handler, log.Logger) {
+//func WireUp(ctx context.Context, declineAmount float32, tracer stdopentracing.Tracer, serviceName string) (http.Handler, log.Logger) {
+func WireUp(ctx context.Context, declineAmount float32, serviceName string) (http.Handler, log.Logger) {
 	// Log domain.
+
+
+
+	var golog = goLogger.New(os.Stdout,"payment.wiring: ", goLogger.Lshortfile)
+
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
-		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+		logger = log.With(logger,"ts", log.DefaultTimestampUTC)
+		logger = log.With(logger,"caller", log.DefaultCaller)
 	}
 
 	// Service domain.
@@ -41,19 +50,27 @@ func WireUp(ctx context.Context, declineAmount float32, tracer stdopentracing.Tr
 	}
 
 	// Endpoint domain.
-	endpoints := MakeEndpoints(service, tracer)
+	//endpoints := MakeEndpoints(service, tracer)
+	endpoints := MakeEndpoints(service)
 
-	router := MakeHTTPHandler(ctx, endpoints, logger, tracer)
+	//router := MakeHTTPHandler(ctx, endpoints, logger, tracer)
+	router := MakeHTTPHandler(ctx, endpoints, logger)
 
-	httpMiddleware := []middleware.Interface{
+	/*httpMiddleware := []middleware.Interface{
 		middleware.Instrument{
 			Duration:     HTTPLatency,
 			RouteMatcher: router,
 		},
-	}
+	} */
 
 	// Handler
-	handler := middleware.Merge(httpMiddleware...).Wrap(router)
+	//handler := middleware.Merge(httpMiddleware...).Wrap(router)
 
-	return handler, logger
+
+	golog.Print("Printing the handler")
+	//fmt.Println(handler)
+
+
+	return router, logger
+	//return logger
 }

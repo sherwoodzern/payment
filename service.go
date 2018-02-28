@@ -14,11 +14,13 @@ type Service interface {
 	Health() []Health                               // GET /health
 }
 
+//swagger:parameters Authorise
 type Authorisation struct {
 	Authorised bool   `json:"authorised"`
 	Message    string `json:"message"`
 }
 
+//swagger:parameters Health
 type Health struct {
 	Service string `json:"service"`
 	Status  string `json:"status"`
@@ -37,7 +39,19 @@ func NewAuthorisationService(declineOverAmount float32) Service {
 type service struct {
 	declineOverAmount float32
 }
-
+//swagger:route POST /paymentAuth payment authorization Authorise
+//
+// This will validate as to whether or not the amount of the purchase is
+// an authorized amount.  The default value is $105.00
+//
+// Consumes:
+//      - application/json
+// Produces:
+//      - application/json
+// Responses:
+//    default: ErrInvalidPaymentAmount
+//        200: Authorisation
+//
 func (s *service) Authorise(amount float32) (Authorisation, error) {
 	if amount == 0 {
 		return Authorisation{}, ErrInvalidPaymentAmount
@@ -59,6 +73,18 @@ func (s *service) Authorise(amount float32) (Authorisation, error) {
 	}, nil
 }
 
+// swagger:route GET /health health Health
+//
+// This will validate as to whether or not the amount of the purchase is
+// an authorized amount.  The default value is $105.00
+//
+// Consumes:
+//      - application/json
+// Produces:
+//      - application/json
+// Responses:
+//        200: []Health
+//
 func (s *service) Health() []Health {
 	var health []Health
 	app := Health{"payment", "OK", time.Now().String()}
